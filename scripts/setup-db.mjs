@@ -9,6 +9,13 @@ if (!databaseUrl) {
 
 const sql = neon(databaseUrl);
 const migration = await readFile(new URL('../migrations/001_init.sql', import.meta.url), 'utf8');
+const statements = migration
+  .split(';')
+  .map((statement) => statement.trim())
+  .filter(Boolean);
 
-await sql(migration);
-console.log('Database setup complete');
+for (const statement of statements) {
+  await sql(statement);
+}
+
+console.log(`Database setup complete: ${statements.length} statements executed`);
